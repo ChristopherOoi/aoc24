@@ -1,19 +1,6 @@
 from collections import defaultdict
 
 
-def find_paths(start, end, nodes, directions):
-    paths = []
-    queue = [(start, [start])]
-    while queue:
-        current, path = queue.pop(0)
-        if current == end:
-            paths.append(path)
-        for node in nodes[current]:
-            if node not in path:
-                queue.append((node, path + [node]))
-    return paths
-
-
 def main():
     file = "inputs.txt"
     directions = [(-1, 0), (0, -1), (1, 0), (0, 1), (-1, 0)]
@@ -52,16 +39,14 @@ def main():
 
     def find_all_paths(nodes, start, end, directions):
         paths = []
-        scores = []
-        seen = {}
+        scores = [99448]
         stack = [(start, 3, 0, [start])]
         while stack:
             node, facing, score, path = stack.pop()
-            state = (node, facing)
-            if state in seen and seen[state] <= score:
+            if score > min(scores):
                 continue
-            seen[state] = score
             if node == end:
+                print("found {} paths".format(len(paths)))
                 paths.append(path)
                 scores.append(score)
                 continue
@@ -78,12 +63,31 @@ def main():
                     new_score = score + distance + turn_cost
                     new_path = path + [next_node]
                     stack.append((next_node, new_facing, new_score, new_path))
-
         return paths, scores
 
     paths, scores = find_all_paths(nodes, start, end, directions)
     min_score = min(scores)
     print(min_score)
+    visited = set()
+    for path, score in zip(paths, scores):
+        if score == min_score:
+            for i in range(len(path) - 1):
+                node = path[i]
+                next_node = path[i + 1]
+                visits = [
+                    (x, y)
+                    for x in range(
+                        min(node[0], next_node[0]),
+                        max(node[0], next_node[0]) + 1,
+                    )
+                    for y in range(
+                        min(node[1], next_node[1]),
+                        max(node[1], next_node[1]) + 1,
+                    )
+                ]
+                for visit in visits:
+                    visited.add(visit)
+    print(len(visited))
 
 
 if __name__ == "__main__":
