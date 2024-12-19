@@ -39,14 +39,19 @@ def main():
 
     def find_all_paths(nodes, start, end, directions):
         paths = []
-        scores = [99448]
+        scores = []
         stack = [(start, 3, 0, [start])]
+        seen = {}
         while stack:
             node, facing, score, path = stack.pop()
-            if score > min(scores):
+            if score > 99448:
                 continue
+            state = (node, facing)
+            if state in seen and seen[state] < score:
+                continue
+            seen[state] = score
             if node == end:
-                print("found {} paths".format(len(paths)))
+                print("found {} paths".format(len(paths) + 1))
                 paths.append(path)
                 scores.append(score)
                 continue
